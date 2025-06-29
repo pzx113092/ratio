@@ -153,14 +153,13 @@
       textInput.type = 'text';
       textInput.placeholder = 'Name';
       textInput.value = text;
-	  textInput.maxLength = 50;
+      textInput.maxLength = 50;
       textInput.addEventListener('input', updateURL);
 
       const valueInput = document.createElement('input');
       valueInput.type = 'number';
       valueInput.value = value;
       valueInput.step = 'any';
-	  textInput.maxLength = 20;
       valueInput.addEventListener('input', () => {
         updateLabel(container);
         updateURL();
