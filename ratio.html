@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Multiplier App</title>
+  <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --text-color: #222;
+      --container-bg: #fff;
+      --input-bg: #fff;
+      --border-color: #ccc;
+      --result-color: #007bff;
+      --shadow-color: rgba(0, 0, 0, 0.06);
+      --button-bg: #007bff;
+      --button-hover: #0056b3;
+      --remove-bg: #dc3545;
+      --remove-hover: #b02a37;
+    }
+    body.dark {
+      --bg-color: #1e1e1e;
+      --text-color: #ddd;
+      --container-bg: #2c2c2c;
+      --input-bg: #333;
+      --border-color: #555;
+      --result-color: #66b2ff;
+      --shadow-color: rgba(255, 255, 255, 0.05);
+      --button-bg: #3399ff;
+      --button-hover: #227acc;
+      --remove-bg: #e06666;
+      --remove-hover: #c05050;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 40px;
+      max-width: 700px;
+      margin: auto;
+      transition: background 0.3s, color 0.3s;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    #theme-toggle {
+      cursor: pointer;
+      font-size: 20px;
+      background: none;
+      border: none;
+      color: var(--text-color);
+      transition: color 0.3s;
+    }
+    #multiplier {
+      width: 100%;
+      max-width: 150px;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 30px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--text-color);
+      box-shadow: 0 1px 3px var(--shadow-color);
+    }
+    .container {
+      background: var(--container-bg);
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px var(--shadow-color);
+      transition: background 0.3s, color 0.3s;
+    }
+    .container input[type="text"],
+    .container input[type="number"] {
+      padding: 8px 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      width: 140px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      box-shadow: 0 1px 2px var(--shadow-color);
+      transition: background 0.3s, color 0.3s;
+    }
+    .result-label {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--result-color);
+      min-width: 60px;
+    }
+    button {
+      background-color: var(--button-bg);
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button:hover {
+      background-color: var(--button-hover);
+    }
+    .remove-btn {
+      background-color: var(--remove-bg);
+    }
+    .remove-btn:hover {
+      background-color: var(--remove-hover);
+    }
+    #add-button {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Multiplier</h2>
+    <button id="theme-toggle" title="Toggle theme">🌙</button>
+  </div>
+
+  <input type="number" id="multiplier" value="1" step="any" />
+
+  <div id="containers"></div>
+
+  <button id="add-button" onclick="addContainer()">➕ Add Container</button>
+  
+ 
+  <script>
+    const multiplierInput = document.getElementById('multiplier');
+    const containersDiv = document.getElementById('containers');
+    const themeToggle = document.getElementById('theme-toggle');
+
+    multiplierInput.addEventListener('input', () => {
+      updateAllLabels();
+      updateURL();
+    });
+
+    function addContainer(text = '', value = 0) {
+      const container = document.createElement('div');
+      container.className = 'container';
+
+      const textInput = document.createElement('input');
+      textInput.type = 'text';
+      textInput.placeholder = 'Name';
+      textInput.value = text;
+	  textInput.maxLength = 20;
+      textInput.addEventListener('input', updateURL);
+
+      const valueInput = document.createElement('input');
+      valueInput.type = 'number';
+      valueInput.value = value;
+      valueInput.step = 'any';
+	  textInput.maxLength = 20;
+      valueInput.addEventListener('input', () => {
+        updateLabel(container);
+        updateURL();
+      });
+
+      const label = document.createElement('span');
+      label.className = 'result-label';
+
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = '✖';
+      removeBtn.className = 'remove-btn';
+      removeBtn.onclick = () => {
+        container.remove();
+        updateURL();
+      };
+
+      container.appendChild(textInput);
+      container.appendChild(valueInput);
+      container.appendChild(label);
+      container.appendChild(removeBtn);
+
+      containersDiv.appendChild(container);
+      updateLabel(container);
+    }
+
+    function updateAllLabels() {
+      document.querySelectorAll('.container').forEach(updateLabel);
+    }
+
+    function updateLabel(container) {
+      const valueInput = container.querySelector('input[type="number"]');
+      const label = container.querySelector('.result-label');
+      const multiplier = parseFloat(multiplierInput.value) || 0;
+      const value = parseFloat(valueInput.value) || 0;
+      label.textContent = (value * multiplier).toFixed(2);
+    }
+
+	function toBase36(num) {
+	  return Math.round(num).toString(36);
+	}
+
+	function fromBase36(str) {
+	  return parseInt(str, 36);
+	}
+
+	function updateURL() {
+	  const m = parseFloat(multiplierInput.value) || 1;
+	  const containers = containersDiv.querySelectorAll('.container');
+	  const items = [...containers].map(container => {
+		const label = container.querySelector('input[type="text"]').value.replace(/[\|,]/g, '');
+		const value = parseFloat(container.querySelector('input[type="number"]').value) || 0;
+		return `${label}|${toBase36(value)}`;
+	  });
+
+	  const params = new URLSearchParams();
+	  params.set('m', m.toString());
+	  if (items.length) params.set('i', items.join(','));
+
+	  const shortURL = `${location.pathname}?${params.toString()}`;
+	  history.replaceState(null, '', shortURL);
+	}
+
+	function loadFromURL() {
+	  const params = new URLSearchParams(location.search);
+	  const m = parseFloat(params.get('m'));
+	  const itemsRaw = params.get('i');
+
+	  if (!isNaN(m)) multiplierInput.value = m;
+
+	  if (itemsRaw) {
+		const items = itemsRaw.split(',').map(entry => {
+		  const [label, baseVal] = entry.split('|');
+		  return {
+			label: decodeURIComponent(label || ''),
+			value: fromBase36(baseVal || '0')
+		  };
+		});
+
+		items.forEach(item => addContainer(item.label, item.value));
+	  } else {
+		addContainer(); // default one
+	  }
+
+	  updateAllLabels();
+	}
+
+    // Dark mode toggle logic
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      themeToggle.textContent = document.body.classList.contains('dark') ? '🌞' : '🌙';
+    });
+
+    loadFromURL(); // initialize state from URL
+  </script>
+</body>
+</html>
